@@ -4,10 +4,22 @@ use collision::{Aabb, Aabb3, Union};
 
 use gltf;
 
+
+use web_sys::{
+    HtmlCanvasElement, WebGl2RenderingContext as GL, 
+    window, AngleInstancedArrays, KeyboardEvent,
+    EventTarget, WebGlBuffer, WebGlProgram,
+    WebGlUniformLocation,
+};
+
+
+use std::sync::Arc;
+
 use crate::render::math::*;
 use crate::render::root::Root;
-use crate::importdata::ImportData;
-use crate:render::primitive::Primitive;
+// use crate::import_data::ImportData;
+use crate::render::texture::ImportData;
+use crate::render::primitive::Primitive;
 
 pub struct Mesh {
     pub index: usize, // glTF index
@@ -15,12 +27,12 @@ pub struct Mesh {
     // TODO: weights
     // pub weights: Vec<Rc<?>>
     pub name: Option<String>,
-
     pub bounds: Aabb3<f32>,
 }
 
 impl Mesh {
     pub fn from_gltf(
+        gl: Arc<GL>,
         g_mesh: &gltf::Mesh,
         root: &mut Root,
         imp: &ImportData,
@@ -29,7 +41,9 @@ impl Mesh {
         let primitives: Vec<Primitive> = g_mesh.primitives()
             .enumerate()
             .map(|(i, g_prim)| {
-                Primitive::from_gltf(&g_prim, i, g_mesh.index(), root, imp, base_path)
+                Primitive::from_gltf(
+                    gl.clone(),
+                    &g_prim, i, g_mesh.index(), root, imp, base_path)
             })
             .collect();
 

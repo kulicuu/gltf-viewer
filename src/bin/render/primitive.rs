@@ -24,7 +24,8 @@ use crate::render::material::Material;
 use crate::render::root::Root;
 use crate::shader::*;
 use crate::shader::ShaderFlags;
-use crate::importdata::ImportData;
+// use crate::import_data::ImportData;
+use crate::render::texture::ImportData;
 
 #[derive(Debug)]
 pub struct Vertex {

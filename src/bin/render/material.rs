@@ -18,7 +18,7 @@ use crate::render::root::Root;
 use crate::render::texture::Texture;
 use crate::shader::*;
 use crate::shader::ShaderFlags;
-use crate::import_data::ImportData;
+use crate::render::texture::ImportData;
 
 pub struct Material {
     gl: Arc<GL>,

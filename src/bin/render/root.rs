@@ -4,13 +4,25 @@ use std::rc::Rc;
 use std::collections::HashMap;
 use std::path::Path;
 
+
+use web_sys::{
+    HtmlCanvasElement, WebGl2RenderingContext as GL, 
+    window, AngleInstancedArrays, KeyboardEvent,
+    EventTarget, WebGlBuffer, WebGlProgram,
+    WebGlUniformLocation,
+};
+
+
+use std::sync::Arc;
+
 use crate::shader::*;
 use crate::render::mesh::Mesh;
 use crate::render::node::Node;
 use crate::render::texture::Texture;
 use crate::render::material::Material;
-use crate::render::shader::{ShaderFlags};
-use importdata::ImportData;
+use crate::shader::{ShaderFlags};
+// use crate::import_data::ImportData;
+use crate::render::texture::ImportData;
 
 
 pub struct Root {
@@ -25,7 +37,7 @@ pub struct Root {
 }
 
 impl Root {
-    pub fn from_gltf(imp: &ImportData, base_path: &Path) -> Self {
+    pub fn from_gltf(gl: Arc<GL>, imp: &ImportData, base_path: &Path) -> Self {
         // let mut root = Root::default();
         let mut root = Root {
             nodes: vec![],
@@ -34,9 +46,9 @@ impl Root {
             materials: vec![],
             shaders: HashMap::new(),
             camera_nodes: vec![],
-        }
+        };
         let nodes = imp.doc.nodes()
-            .map(|g_node| Node::from_gltf(&g_node, &mut root, imp, base_path))
+            .map(|g_node| Node::from_gltf(gl.clone(), &g_node, &mut root, imp, base_path))
             .collect();
         root.nodes = nodes;
         root.camera_nodes = root.nodes.iter()

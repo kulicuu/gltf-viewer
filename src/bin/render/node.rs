@@ -3,14 +3,25 @@ use std::path::Path;
 
 use gltf;
 
-use crate::collision::{Aabb, Union};
+use web_sys::{
+    HtmlCanvasElement, WebGl2RenderingContext as GL, 
+    window, AngleInstancedArrays, KeyboardEvent,
+    EventTarget, WebGlBuffer, WebGlProgram,
+    WebGlUniformLocation,
+};
+
+
+use std::sync::Arc;
+
+use collision::{Aabb, Union};
 
 use crate::controls::CameraParams;
 use crate::render::math::*;
 use crate::render::mesh::Mesh;
 use crate::render::root::Root;
 use crate::render::camera::Camera;
-use crate::importdata::ImportData;
+// use crate::import_data::ImportData;
+use crate::render::texture::ImportData;
 
 pub struct Node {
     pub index: usize, // glTF index
@@ -26,13 +37,16 @@ pub struct Node {
     pub name: Option<String>,
 
     pub final_transform: Matrix4, // including parent transforms
-    pub bounds: Aabb3,
+    // pub bounds: Aabb3,
 }
+
+use cgmath;
 
 
 impl Node {
     // TODO!: refactor transformations using mint and non-deprecated functions
     pub fn from_gltf(
+        gl: Arc<GL>,
         g_node: &gltf::Node,
         root: &mut Root,
         imp: &ImportData,
@@ -54,7 +68,9 @@ impl Node {
             }
 
             if mesh.is_none() { // not using else due to borrow-checking madness
-                mesh = Some(Rc::new(Mesh::from_gltf(&g_mesh, root, imp, base_path)));
+                mesh = Some(Rc::new(Mesh::from_gltf(
+                    gl.clone(),
+                    &g_mesh, root, imp, base_path)));
                 root.meshes.push(mesh.clone().unwrap());
             }
         }
@@ -75,7 +91,10 @@ impl Node {
 
             final_transform: Matrix4::identity(),
 
-            bounds: Aabb3::new()::zero(),
+            // bounds: Aabb3::new(
+            //     cgmath::Point3::new(0.0, 0.0, 0.0), 
+            //     cgmath::Point3::new(0.0, 0.0, 0.0),
+            // ),
         }
     }
 
