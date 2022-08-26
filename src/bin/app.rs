@@ -5,6 +5,7 @@ mod render;
 mod controls;
 mod shader;
 mod import_data;
+mod viewer;
 
 use web_sys::{
     HtmlCanvasElement, WebGl2RenderingContext as GL, 
@@ -35,6 +36,7 @@ use gltf;
 
 
 
+
 fn main()
 {
     let document = web_sys::window().unwrap().document().unwrap();
@@ -50,23 +52,9 @@ fn main()
     let gl : Arc<GL> = Arc::new(gl);
 
     
-    let raw = include_bytes!("../../assets/Stork.glb");
-    let (document, buffers, images) = gltf::import_slice(raw).unwrap();
 
-    let raw = include_bytes!("../../assets/Stork.glb");
-    let parsed = gltf::Glb::from_slice(raw).unwrap();
-    let header = parsed.header;
-    log!("header: ", header.length);
-
-    let s = match std::str::from_utf8(&*(parsed.json)) {
-        Ok(v) => v,
-        Err(e) => "Error parsing utf8",
-    };
-    let bin = parsed.bin.unwrap();
-    log!("json:", s);
     
-    
-    
+    viewer::GltfViewer::new(gl.clone());
     
     
     let start_time = Instant::now();

@@ -20,12 +20,12 @@ use std::sync::Arc;
 
 // use camera::Camera;
 use crate::render::math::*;
-use crate::render::material::Material;
+// use crate::render::material::Material;
 use crate::render::root::Root;
 use crate::shader::*;
 use crate::shader::ShaderFlags;
-// use crate::import_data::ImportData;
-use crate::render::texture::ImportData;
+use crate::import_data::ImportData;
+// use crate::render::texture::ImportData;
 
 #[derive(Debug)]
 pub struct Vertex {
@@ -63,7 +63,7 @@ pub struct Texture {
 
 pub struct Primitive {
     gl: Arc<GL>,
-    pub bounds: Aabb3,
+    // pub bounds: Aabb3,
 
     vao: u32,
     vbo: u32,
@@ -72,9 +72,9 @@ pub struct Primitive {
     ebo: Option<u32>,
     num_indices: u32,
 
-    material: Rc<Material>,
+    // material: Rc<Material>,
 
-    pbr_shader: Rc<PbrShader>,
+    // pbr_shader: Rc<PbrShader>,
 
     // TODO!: mode, targets
 }
@@ -82,25 +82,25 @@ pub struct Primitive {
 impl Primitive {
     pub fn new(
         gl: Arc<GL>,
-        bounds: Aabb3,
+        // bounds: Aabb3,
         vertices: &[Vertex],
         indices: Option<Vec<u32>>,
-        material: Rc<Material>,
-        shader: Rc<PbrShader>,
+        // material: Rc<Material>,
+        // shader: Rc<PbrShader>,
     ) -> Primitive {
         let num_indices = indices.as_ref().map(|i| i.len()).unwrap_or(0);
         let mut prim = Primitive {
             gl: gl.clone(),
-            bounds,
+            // bounds,
             num_vertices: vertices.len() as u32,
             num_indices: num_indices as u32,
             vao: 0, vbo: 0, ebo: None,
-            material,
-            pbr_shader: shader,
+            // material,
+            // pbr_shader: shader,
         };
 
         // now that we have all the required data, set the vertex buffers and its attribute pointers.
-        unsafe { prim.setup_primitive(vertices, indices) }
+        // unsafe { prim.setup_primitive(vertices, indices) }
         prim
     }
 
@@ -111,7 +111,8 @@ impl Primitive {
         mesh_index: usize,
         root: &mut Root,
         imp: &ImportData,
-        base_path: &Path) -> Primitive
+    )
+    -> Primitive
     {
         let buffers = &imp.buffers;
         let reader = g_primitive.reader(|buffer| Some(&buffers[buffer.index()]));
@@ -124,11 +125,11 @@ impl Primitive {
             iter.collect::<Vec<_>>()
         };
 
-        let bounds = g_primitive.bounding_box();
-        let bounds = Aabb3 {
-            min: bounds.min.into(),
-            max: bounds.max.into()
-        };
+        // let bounds = g_primitive.bounding_box();
+        // let bounds = Aabb3 {
+        //     min: bounds.min.into(),
+        //     max: bounds.max.into()
+        // };
 
         let mut vertices: Vec<Vertex> = positions
             .into_iter()
@@ -229,37 +230,44 @@ impl Primitive {
 
         let g_material = g_primitive.material();
 
-        let mut material = None;
-        if let Some(mat) = root.materials.iter().find(|m| (***m).index == g_material.index()) {
-            material = Rc::clone(mat).into()
-        }
+        // let mut material = None;
+        // if let Some(mat) = root.materials.iter().find(|m| (***m).index == g_material.index()) {
+        //     material = Rc::clone(mat).into()
+        // }
 
-        if material.is_none() { // no else due to borrow checker madness
-            let mat = Rc::new(Material::from_gltf(
-                gl.clone(),
-                &g_material, root, imp, base_path
-            ));
-            root.materials.push(Rc::clone(&mat));
-            material = Some(mat);
-        };
-        let material = material.unwrap();
-        shader_flags |= material.shader_flags();
+        // if material.is_none() { // no else due to borrow checker madness
+        //     let mat = Rc::new(Material::from_gltf(
+        //         gl.clone(),
+        //         &g_material, root, imp
+        //     ));
+        //     root.materials.push(Rc::clone(&mat));
+        //     material = Some(mat);
+        // };
+        // let material = material.unwrap();
+        // shader_flags |= material.shader_flags();
 
-        let mut new_shader = false; // borrow checker workaround
-        let shader =
-            if let Some(shader) = root.shaders.get(&shader_flags) {
-                Rc::clone(shader)
-            }
-            else {
-                new_shader = true;
-                // PbrShader::new(shader_flags).into()
-                PbrShader::new().into()
-            };
-        if new_shader {
-            root.shaders.insert(shader_flags, Rc::clone(&shader));
-        }
+        // let mut new_shader = false; // borrow checker workaround
+        // let shader =
+        //     if let Some(shader) = root.shaders.get(&shader_flags) {
+        //         Rc::clone(shader)
+        //     }
+        //     else {
+        //         new_shader = true;
+        //         // PbrShader::new(shader_flags).into()
+        //         PbrShader::new().into()
+        //     };
+        // if new_shader {
+        //     root.shaders.insert(shader_flags, Rc::clone(&shader));
+        // }
 
-        Primitive::new(gl.clone(), bounds, &vertices, indices, material, shader)
+        Primitive::new(
+            gl.clone(), 
+            // bounds, 
+            &vertices, 
+            indices, 
+            // material, 
+            // shader
+        )
     }
 
     /// render the mesh

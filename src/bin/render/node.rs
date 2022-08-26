@@ -11,6 +11,8 @@ use web_sys::{
 };
 
 
+use gloo_console::log;
+
 use std::sync::Arc;
 
 use collision::{Aabb, Union};
@@ -20,8 +22,12 @@ use crate::render::math::*;
 use crate::render::mesh::Mesh;
 use crate::render::root::Root;
 use crate::render::camera::Camera;
-// use crate::import_data::ImportData;
-use crate::render::texture::ImportData;
+use crate::import_data::ImportData;
+// use crate::render::texture::ImportData;
+
+
+
+
 
 pub struct Node {
     pub index: usize, // glTF index
@@ -50,27 +56,33 @@ impl Node {
         g_node: &gltf::Node,
         root: &mut Root,
         imp: &ImportData,
-        base_path: &Path
+
     ) -> Node {
         // convert matrix in 3 steps due to type system weirdness
+
+        log!("creating node");
+
+
         let matrix = &g_node.transform().matrix();
         let matrix: &Matrix4 = matrix.into();
         let matrix = *matrix;
 
         let (trans, rot, scale) = g_node.transform().decomposed();
         let r = rot;
+        log!("rot[1]:", rot[1]);
         let rotation = Quaternion::new(r[3], r[0], r[1], r[2]); // NOTE: different element order!
-
+        log!("scale: ", scale[1]);
         let mut mesh = None;
         if let Some(g_mesh) = g_node.mesh() {
             if let Some(existing_mesh) = root.meshes.iter().find(|mesh| (***mesh).index == g_mesh.index()) {
+                log!("existing mesh");
                 mesh = Some(Rc::clone(existing_mesh));
             }
 
             if mesh.is_none() { // not using else due to borrow-checking madness
                 mesh = Some(Rc::new(Mesh::from_gltf(
                     gl.clone(),
-                    &g_mesh, root, imp, base_path)));
+                    &g_mesh, root, imp)));
                 root.meshes.push(mesh.clone().unwrap());
             }
         }
@@ -140,15 +152,15 @@ impl Node {
     //     }
     // }
 
-    pub fn draw(&mut self, root: &mut Root, cam_params: &CameraParams) {
-        if let Some(ref mesh) = self.mesh {
-            let mvp_matrix = cam_params.projection_matrix * cam_params.view_matrix * self.final_transform;
+    // pub fn draw(&mut self, root: &mut Root, cam_params: &CameraParams) {
+    //     if let Some(ref mesh) = self.mesh {
+    //         let mvp_matrix = cam_params.projection_matrix * cam_params.view_matrix * self.final_transform;
 
-            (*mesh).draw(&self.final_transform, &mvp_matrix, &cam_params.position);
-        }
-        for node_id in &self.children {
-            let node = root.unsafe_get_node_mut(*node_id);
-            node.draw(root, cam_params);
-        }
-    }
+    //         (*mesh).draw(&self.final_transform, &mvp_matrix, &cam_params.position);
+    //     }
+    //     for node_id in &self.children {
+    //         let node = root.unsafe_get_node_mut(*node_id);
+    //         node.draw(root, cam_params);
+    //     }
+    // }
 }
