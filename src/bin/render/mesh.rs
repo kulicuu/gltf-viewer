@@ -69,9 +69,14 @@ impl Mesh {
         }
     }
 
-    // pub fn draw(&self, model_matrix: &Matrix4, mvp_matrix: &Matrix4, camera_position: &Vector3) {
-    //     for primitive in &self.primitives {
-    //         // unsafe { primitive.draw(model_matrix, mvp_matrix, camera_position) }
-    //     }
-    // }
+    pub fn draw(
+        &self, 
+        model_matrix: &Matrix4, 
+        mvp_matrix: &Matrix4, 
+        camera_position: &Vector3
+    ) {
+        for primitive in &self.primitives {
+            // unsafe { primitive.draw(model_matrix, mvp_matrix, camera_position) }
+        }
+    }
 }

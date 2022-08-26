@@ -19,8 +19,10 @@ use crate::render::math::*;
 
 use crate::render::scene::Scene;
 use crate::render::root::Root;
-use crate::controls::OrbitControls;
+use crate::render::camera::Camera;
 
+
+use crate::controls::OrbitControls;
 
 use crate::render::texture::ImportData;
 // use crate::import_data::ImportData;
@@ -70,7 +72,7 @@ pub struct GltfViewer {
     // size: PhysicalSize,
     // dpi_factor: f64,
 
-    // orbit_controls: OrbitControls,
+    orbit_controls: OrbitControls,
     // first_mouse: bool,
     // last_x: f32,
     // last_y: f32,
@@ -89,11 +91,20 @@ pub struct GltfViewer {
 
 impl GltfViewer {
     pub fn new(
-        gl: Arc<GL>
-
+        gl: Arc<GL>,
+        // camera_options: CameraOptions,
     ) 
     -> GltfViewer 
     {
+
+        let camera_options = CameraOptions {
+            index: 0,
+            position: Some(Vector3::new(0.3, 0.3, 0.3)),
+            target: Some(Vector3::new(0.0, 0.0, 0.0)),
+            fovy: Deg(35.0),
+            straight: true,
+        };
+
 
         let raw = include_bytes!("../../assets/Stork.glb");
         let (doc, buffers, images) = gltf::import_slice(raw).unwrap();
@@ -120,12 +131,22 @@ impl GltfViewer {
             &mut root
         );
 
+
+
+        let mut orbit_controls = OrbitControls::new(
+            Point3::new(0.0, 0.0, 2.0),
+            // inner_size,
+        );
+        orbit_controls.camera = Camera::default();
+        orbit_controls.camera.fovy = camera_options.fovy;
+        // orbit_controls.camera.update_aspect_ratio(inner_size.width as f32 / inner_size.height as f32); // updates projection matrix
+
         // let (root, scene) = Self::load(source, scene_index);
         let mut viewer = GltfViewer {
             // size: inner_size,
             // dpi_factor,
 
-            // orbit_controls,
+            orbit_controls,
             // first_mouse, last_x, last_y,
 
             // events_loop,
@@ -140,6 +161,16 @@ impl GltfViewer {
             // render_timer: FrameTimer::new("rendering", 300),
         };
         viewer
+    }
+
+    pub fn draw(&mut self) {
+
+        let cam_params = self.orbit_controls.camera_params();
+        self.scene.draw(
+            &mut self.root, 
+            &cam_params,
+        );
+
     }
 
 
