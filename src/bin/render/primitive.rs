@@ -70,11 +70,11 @@ pub struct Primitive {
     // num_vertices: u32,
 
     // ebo: Option<u32>,
-    // num_indices: u32,
+    num_indices: u32,
 
-    // material: Rc<Material>,
+    material: Rc<Material>,
 
-    // pbr_shader: Rc<PbrShader>,
+    pbr_shader: Rc<PbrShader>,
 
     // TODO!: mode, targets
 }
@@ -83,20 +83,20 @@ impl Primitive {
     pub fn new(
         gl: Arc<GL>,
         // bounds: Aabb3,
-        // vertices: &[Vertex],
-        // indices: Option<Vec<u32>>,
-        // material: Rc<Material>,
-        // shader: Rc<PbrShader>,
+        vertices: &[Vertex],
+        indices: Option<Vec<u32>>,
+        material: Rc<Material>,
+        shader: Rc<PbrShader>,
     ) -> Primitive {
-        // let num_indices = indices.as_ref().map(|i| i.len()).unwrap_or(0);
+        let num_indices = indices.as_ref().map(|i| i.len()).unwrap_or(0);
         let mut prim = Primitive {
             gl: gl.clone(),
             // bounds,
             // num_vertices: vertices.len() as u32,
-            // num_indices: num_indices as u32,
+            num_indices: num_indices as u32,
             // vao: 0, vbo: 0, ebo: None,
-            // material,
-            // pbr_shader: shader,
+            material,
+            pbr_shader: shader,
         };
 
         // now that we have all the required data, set the vertex buffers and its attribute pointers.
@@ -253,29 +253,29 @@ impl Primitive {
             material = Some(mat);
         };
         let material = material.unwrap();
-        // shader_flags |= material.shader_flags();
+        shader_flags |= material.shader_flags();
 
-        // let mut new_shader = false; // borrow checker workaround
-        // let shader =
-        //     if let Some(shader) = root.shaders.get(&shader_flags) {
-        //         Rc::clone(shader)
-        //     }
-        //     else {
-        //         new_shader = true;
-        //         // PbrShader::new(shader_flags).into()
-        //         PbrShader::new().into()
-        //     };
-        // if new_shader {
-        //     root.shaders.insert(shader_flags, Rc::clone(&shader));
-        // }
+        let mut new_shader = false; // borrow checker workaround
+        let shader =
+            if let Some(shader) = root.shaders.get(&shader_flags) {
+                Rc::clone(shader)
+            }
+            else {
+                new_shader = true;
+                // PbrShader::new(shader_flags).into()
+                PbrShader::new().into()
+            };
+        if new_shader {
+            root.shaders.insert(shader_flags, Rc::clone(&shader));
+        }
 
         Primitive::new(
             gl.clone(), 
             // bounds, 
-            // &vertices, 
-            // indices, 
-            // material, 
-            // shader
+            &vertices, 
+            indices, 
+            material, 
+            shader
         )
     }
 

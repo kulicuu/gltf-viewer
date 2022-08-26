@@ -2,7 +2,7 @@ pub mod math;
 
 pub mod root;
 // pub use self::root::*;
-// pub mod scene;
+pub mod scene;
 // pub use self::scene::*;
 pub mod node;
 // pub use self::node::*;

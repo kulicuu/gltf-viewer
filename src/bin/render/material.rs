@@ -110,25 +110,25 @@ impl Material {
         material
     }
 
-    // pub fn shader_flags(&self) -> ShaderFlags {
-    //     let mut flags = ShaderFlags::empty();
-    //     if self.base_color_texture.is_some() {
-    //         flags |= ShaderFlags::HAS_BASECOLORMAP;
-    //     }
-    //     if self.normal_texture.is_some() {
-    //         flags |= ShaderFlags::HAS_NORMALMAP;
-    //     }
-    //     if self.emissive_texture.is_some() {
-    //         flags |= ShaderFlags::HAS_EMISSIVEMAP;
-    //     }
-    //     if self.metallic_roughness_texture.is_some() {
-    //         flags |= ShaderFlags::HAS_METALROUGHNESSMAP;
-    //     }
-    //     if self.occlusion_texture.is_some() {
-    //         flags |= ShaderFlags::HAS_OCCLUSIONMAP;
-    //     }
-    //     flags
-    // }
+    pub fn shader_flags(&self) -> ShaderFlags {
+        let mut flags = ShaderFlags::empty();
+        if self.base_color_texture.is_some() {
+            flags |= ShaderFlags::HAS_BASECOLORMAP;
+        }
+        if self.normal_texture.is_some() {
+            flags |= ShaderFlags::HAS_NORMALMAP;
+        }
+        if self.emissive_texture.is_some() {
+            flags |= ShaderFlags::HAS_EMISSIVEMAP;
+        }
+        if self.metallic_roughness_texture.is_some() {
+            flags |= ShaderFlags::HAS_METALROUGHNESSMAP;
+        }
+        if self.occlusion_texture.is_some() {
+            flags |= ShaderFlags::HAS_OCCLUSIONMAP;
+        }
+        flags
+    }
 
 }
 

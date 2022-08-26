@@ -17,7 +17,7 @@ use cgmath::{ Deg, Point3 };
 
 use crate::render::math::*;
 
-// use crate::render::scene::Scene;
+use crate::render::scene::Scene;
 use crate::render::root::Root;
 use crate::controls::OrbitControls;
 
@@ -68,18 +68,18 @@ pub struct CameraOptions {
 
 pub struct GltfViewer {
     // size: PhysicalSize,
-    dpi_factor: f64,
+    // dpi_factor: f64,
 
-    orbit_controls: OrbitControls,
-    first_mouse: bool,
-    last_x: f32,
-    last_y: f32,
+    // orbit_controls: OrbitControls,
+    // first_mouse: bool,
+    // last_x: f32,
+    // last_y: f32,
     // events_loop: Option<glutin::EventsLoop>,
     // gl_window: Option<glutin::GlWindow>,
 
     // TODO!: get rid of scene?
     root: Root,
-    // scene: Scene,
+    scene: Scene,
 
     delta_time: f64, // seconds
     // last_frame: Instant,
@@ -92,7 +92,7 @@ impl GltfViewer {
         gl: Arc<GL>
 
     ) 
-    // -> GltfViewer 
+    -> GltfViewer 
     {
 
         let raw = include_bytes!("../../assets/Stork.glb");
@@ -114,5 +114,35 @@ impl GltfViewer {
         let imp = ImportData { doc, buffers, images };
 
         let mut root = Root::from_gltf(gl.clone(), &imp);
+        let scene_index = 0;
+        let scene = Scene::from_gltf(
+            &imp.doc.scenes().nth(scene_index).unwrap(), 
+            &mut root
+        );
+
+        // let (root, scene) = Self::load(source, scene_index);
+        let mut viewer = GltfViewer {
+            // size: inner_size,
+            // dpi_factor,
+
+            // orbit_controls,
+            // first_mouse, last_x, last_y,
+
+            // events_loop,
+            // gl_window,
+
+            root,
+            scene,
+
+            delta_time: 0.0, // seconds
+            // last_frame: Instant::now(),
+
+            // render_timer: FrameTimer::new("rendering", 300),
+        };
+        viewer
     }
+
+
+
+
 }
