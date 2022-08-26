@@ -15,17 +15,19 @@ use web_sys::{
     WebGlUniformLocation,
 };
 
+use gloo_console::log;
+
 
 use std::sync::Arc;
 
 // use camera::Camera;
 use crate::render::math::*;
-// use crate::render::material::Material;
+use crate::render::material::Material;
 use crate::render::root::Root;
 use crate::shader::*;
 use crate::shader::ShaderFlags;
-use crate::import_data::ImportData;
-// use crate::render::texture::ImportData;
+// use crate::import_data::ImportData;
+use crate::render::texture::ImportData;
 
 #[derive(Debug)]
 pub struct Vertex {
@@ -63,14 +65,12 @@ pub struct Texture {
 
 pub struct Primitive {
     gl: Arc<GL>,
-    // pub bounds: Aabb3,
+    // vao: u32,
+    // vbo: u32,
+    // num_vertices: u32,
 
-    vao: u32,
-    vbo: u32,
-    num_vertices: u32,
-
-    ebo: Option<u32>,
-    num_indices: u32,
+    // ebo: Option<u32>,
+    // num_indices: u32,
 
     // material: Rc<Material>,
 
@@ -83,18 +83,18 @@ impl Primitive {
     pub fn new(
         gl: Arc<GL>,
         // bounds: Aabb3,
-        vertices: &[Vertex],
-        indices: Option<Vec<u32>>,
+        // vertices: &[Vertex],
+        // indices: Option<Vec<u32>>,
         // material: Rc<Material>,
         // shader: Rc<PbrShader>,
     ) -> Primitive {
-        let num_indices = indices.as_ref().map(|i| i.len()).unwrap_or(0);
+        // let num_indices = indices.as_ref().map(|i| i.len()).unwrap_or(0);
         let mut prim = Primitive {
             gl: gl.clone(),
             // bounds,
-            num_vertices: vertices.len() as u32,
-            num_indices: num_indices as u32,
-            vao: 0, vbo: 0, ebo: None,
+            // num_vertices: vertices.len() as u32,
+            // num_indices: num_indices as u32,
+            // vao: 0, vbo: 0, ebo: None,
             // material,
             // pbr_shader: shader,
         };
@@ -156,12 +156,14 @@ impl Primitive {
 
         // tangents
         if let Some(tangents) = reader.read_tangents() {
+            log!("have tangents.");
             for (i, tangent) in tangents.enumerate() {
                 vertices[i].tangent = Vector4::from(tangent);
             }
             shader_flags |= ShaderFlags::HAS_TANGENTS;
         }
         else {
+            log!("no tangents.");
             // debug!("Found no TANGENTS for primitive {} of mesh {} \
             //        (tangent calculation not implemented yet)", primitive_index, mesh_index);
         }
@@ -170,6 +172,7 @@ impl Primitive {
         let mut tex_coord_set = 0;
         while let Some(tex_coords) = reader.read_tex_coords(tex_coord_set) {
             if tex_coord_set > 1 {
+                log!("have tex coords");
                 // warn!("Ignoring texture coordinate set {}, \
                 //         only supporting 2 sets at the moment. (mesh: {}, primitive: {})",
                 //         tex_coord_set, mesh_index, primitive_index);
@@ -177,6 +180,7 @@ impl Primitive {
                 continue;
             }
             for (i, tex_coord) in tex_coords.into_f32().enumerate() {
+                log!("tex coord");
                 match tex_coord_set {
                     0 => vertices[i].tex_coord_0 = Vector2::from(tex_coord),
                     1 => vertices[i].tex_coord_1 = Vector2::from(tex_coord),
@@ -211,6 +215,7 @@ impl Primitive {
         }
 
         if let Some(weights) = reader.read_weights(0) {
+            log!("have weights.");
             for (i, weights) in weights.into_f32().enumerate() {
                 vertices[i].weights_0 = weights.into();
             }
@@ -223,27 +228,31 @@ impl Primitive {
         let indices = reader
             .read_indices()
             .map(|read_indices| {
+                log!("have index.");
                 read_indices.into_u32().collect::<Vec<_>>()
             });
 
-        assert_eq!(g_primitive.mode(), Mode::Triangles, "not yet implemented: primitive mode must be Triangles.");
+        // assert_eq!(g_primitive.mode(), Mode::Triangles, "not yet implemented: primitive mode must be Triangles.");
 
         let g_material = g_primitive.material();
 
-        // let mut material = None;
-        // if let Some(mat) = root.materials.iter().find(|m| (***m).index == g_material.index()) {
-        //     material = Rc::clone(mat).into()
-        // }
+        let mut material = None;
+        if let Some(mat) = root.materials.iter().find(|m| (***m).index == g_material.index()) {
+            // log!("have Some (mat)");
+            material = Rc::clone(mat).into()
+        }
 
-        // if material.is_none() { // no else due to borrow checker madness
-        //     let mat = Rc::new(Material::from_gltf(
-        //         gl.clone(),
-        //         &g_material, root, imp
-        //     ));
-        //     root.materials.push(Rc::clone(&mat));
-        //     material = Some(mat);
-        // };
-        // let material = material.unwrap();
+        if material.is_none() { // no else due to borrow checker madness
+            let mat = Rc::new(Material::from_gltf(
+                gl.clone(),
+                &g_material, 
+                root, 
+                imp
+            ));
+            root.materials.push(Rc::clone(&mat));
+            material = Some(mat);
+        };
+        let material = material.unwrap();
         // shader_flags |= material.shader_flags();
 
         // let mut new_shader = false; // borrow checker workaround
@@ -263,8 +272,8 @@ impl Primitive {
         Primitive::new(
             gl.clone(), 
             // bounds, 
-            &vertices, 
-            indices, 
+            // &vertices, 
+            // indices, 
             // material, 
             // shader
         )

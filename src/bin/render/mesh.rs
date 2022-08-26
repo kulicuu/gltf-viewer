@@ -18,13 +18,13 @@ use std::sync::Arc;
 
 use crate::render::math::*;
 use crate::render::root::Root;
-use crate::import_data::ImportData;
-// use crate::render::texture::ImportData;
+// use crate::import_data::ImportData;
+use crate::render::texture::ImportData;
 use crate::render::primitive::Primitive;
 
 pub struct Mesh {
     pub index: usize, // glTF index
-    // pub primitives: Vec<Primitive>,
+    pub primitives: Vec<Primitive>,
     // TODO: weights
     // pub weights: Vec<Rc<?>>
     pub name: Option<String>,
@@ -41,22 +41,28 @@ impl Mesh {
     ) -> Mesh {
 
         log!("mesh creation");
-        // let primitives: Vec<Primitive> = g_mesh.primitives()
+        let primitives: Vec<Primitive> = g_mesh.primitives()
         // let primitives: Vec<()> = g_mesh.primitives()
-            // .enumerate()
-            // .map(|(i, g_prim)| {
-            //     Primitive::from_gltf(
-            //         gl.clone(),
-            //         &g_prim, i, g_mesh.index(), root, imp)
-            // })
-            // .collect();
+            .enumerate()
+            .map(|(i, g_prim)| {
+                log!("have a primitive in the mesh");
+                Primitive::from_gltf(
+                    gl.clone(),
+                    &g_prim, 
+                    i, 
+                    g_mesh.index(), 
+                    root, 
+                    imp
+                )
+            })
+            .collect();
 
         // let bounds = primitives.iter()
         //     .fold(Aabb3::zero(), |bounds, prim| prim.bounds.union(&bounds));
 
         Mesh {
             index: g_mesh.index(),
-            // primitives: primitives,
+            primitives: primitives,
             // primitives: vec![],
             name: g_mesh.name().map(|s| s.into()),
             // bounds,

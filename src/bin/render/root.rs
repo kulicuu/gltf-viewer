@@ -21,18 +21,18 @@ use std::sync::Arc;
 use crate::shader::*;
 use crate::render::mesh::Mesh;
 // use crate::render::node::Node;
-// use crate::render::texture::Texture;
-// use crate::render::material::Material;
+use crate::render::texture::Texture;
+use crate::render::material::Material;
 use crate::shader::{ShaderFlags};
-use crate::import_data::ImportData;
-// use crate::render::texture::ImportData;
+// use crate::import_data::ImportData;
+use crate::render::texture::ImportData;
 
 
 pub struct Root {
     pub nodes: Vec<Node>,
     pub meshes: Vec<Rc<Mesh>>, 
-    // pub textures: Vec<Rc<Texture>>,
-    // pub materials: Vec<Rc<Material>>,
+    pub textures: Vec<Rc<Texture>>,
+    pub materials: Vec<Rc<Material>>,
     pub shaders: HashMap<ShaderFlags, Rc<PbrShader>>,
 
     pub camera_nodes: Vec<usize>, // indices of camera nodes
@@ -45,8 +45,8 @@ impl Root {
         let mut root = Root {
             nodes: vec![],
             meshes: vec![],
-            // textures: vec![],
-            // materials: vec![],
+            textures: vec![],
+            materials: vec![],
             shaders: HashMap::new(),
             camera_nodes: vec![],
         };

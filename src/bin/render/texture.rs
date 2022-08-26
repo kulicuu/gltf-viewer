@@ -46,7 +46,6 @@ impl Texture {
         g_texture: &gltf::Texture, 
         tex_coord: u32, 
         imp: &ImportData, 
-        base_path: &Path
     ) 
     -> Texture
     {
@@ -55,67 +54,67 @@ impl Texture {
         let mut texture_id = 0;
 
         let g_img = g_texture.source();
-        let img = match g_img.source() {
-            Source::View { view, mime_type } => {
-                let parent_buffer_data = &buffers[view.buffer().index()].0;
-                let begin = view.offset();
-                let end = begin + view.length();
-                let data = &parent_buffer_data[begin..end];
-                match mime_type {
-                    "image/jpeg" => image::load_from_memory_with_format(data, Jpeg),
-                    "image/png" => image::load_from_memory_with_format(data, Png),
-                    _ => Err(image::error::ImageError::IoError(Error::new(ErrorKind::Other, "err") )),
-                }
-            },
-            Source::Uri { uri, mime_type } => {
-                if uri.starts_with("data:") {
-                    let encoded = uri.split(',').nth(1).unwrap();
-                    let data = base64::decode(&encoded).unwrap();
-                    let mime_type = if let Some(ty) = mime_type {
-                        ty
-                    } else {
-                        uri.split(',')
-                            .nth(0).unwrap()
-                            .split(':')
-                            .nth(1).unwrap()
-                            .split(';')
-                            .nth(0).unwrap()
-                    };
+        // let img = match g_img.source() {
+        //     Source::View { view, mime_type } => {
+        //         let parent_buffer_data = &buffers[view.buffer().index()].0;
+        //         let begin = view.offset();
+        //         let end = begin + view.length();
+        //         let data = &parent_buffer_data[begin..end];
+        //         match mime_type {
+        //             "image/jpeg" => image::load_from_memory_with_format(data, Jpeg),
+        //             "image/png" => image::load_from_memory_with_format(data, Png),
+        //             _ => Err(image::error::ImageError::IoError(Error::new(ErrorKind::Other, "err") )),
+        //         }
+        //     },
+        //     Source::Uri { uri, mime_type } => {
+                // if uri.starts_with("data:") {
+                //     let encoded = uri.split(',').nth(1).unwrap();
+                //     let data = base64::decode(&encoded).unwrap();
+                //     let mime_type = if let Some(ty) = mime_type {
+                //         ty
+                //     } else {
+                //         uri.split(',')
+                //             .nth(0).unwrap()
+                //             .split(':')
+                //             .nth(1).unwrap()
+                //             .split(';')
+                //             .nth(0).unwrap()
+                //     };
 
-                    match mime_type {
-                        "image/jpeg" => image::load_from_memory_with_format(&data, Jpeg),
-                        "image/png" => image::load_from_memory_with_format(&data, Png),
-                        _ => Err(image::error::ImageError::IoError(Error::new(ErrorKind::Other, "err") )),
-                    }
-                }
-                else {
-                    if let Some(mime_type) = mime_type {
-                        let path = base_path.parent().unwrap_or_else(|| Path::new("./")).join(uri);
-                        let file = fs::File::open(path).unwrap();
-                        let reader = io::BufReader::new(file);
-                        match mime_type {
-                            "image/jpeg" => image::load(reader, Jpeg),
-                            "image/png" => image::load(reader, Png),
-                            _ => Err(image::error::ImageError::IoError(Error::new(ErrorKind::Other, "err") )),
-                        }
-                    }
-                    else {
-                        let path = base_path.parent().unwrap_or_else(||Path::new("./")).join(uri);
-                        image::open(path)
-                    }
-                }
-            }
-        };
+                //     match mime_type {
+                //         "image/jpeg" => image::load_from_memory_with_format(&data, Jpeg),
+                //         "image/png" => image::load_from_memory_with_format(&data, Png),
+                //         _ => Err(image::error::ImageError::IoError(Error::new(ErrorKind::Other, "err") )),
+                //     }
+                // }
+                // else {
+                //     if let Some(mime_type) = mime_type {
+                //         // let path = base_path.parent().unwrap_or_else(|| Path::new("./")).join(uri);
+                //         // let file = fs::File::open(path).unwrap();
+                //         // let reader = io::BufReader::new(file);
+                //         match mime_type {
+                //             "image/jpeg" => image::load(reader, Jpeg),
+                //             "image/png" => image::load(reader, Png),
+                //             _ => Err(image::error::ImageError::IoError(Error::new(ErrorKind::Other, "err") )),
+                //         }
+                //     }
+                //     else {
+                //         // let path = base_path.parent().unwrap_or_else(||Path::new("./")).join(uri);
+                //         // image::open(path)
+                //     }
+                // }
+            // }
+        // };
 
-        let dyn_img = img.expect("Image loading failed.");
+        // let dyn_img = img.expect("Image loading failed.");
         
-        let format = match dyn_img {
-            ImageLuma8(_) => GL::RED,
-            ImageLumaA8(_) => GL::RG,
-            ImageRgb8(_) => GL::RGB,
-            ImageRgba8(_) => GL::RGBA,
-            _ => 0,
-        };
+        // let format = match dyn_img {
+        //     ImageLuma8(_) => GL::RED,
+        //     ImageLumaA8(_) => GL::RG,
+        //     ImageRgb8(_) => GL::RGB,
+        //     ImageRgba8(_) => GL::RGBA,
+        //     _ => 0,
+        // };
 
         // // **Non-Power-Of-Two Texture Implementation Note**: glTF does not guarantee that a texture's
         // // dimensions are a power-of-two.  At runtime, if a texture's width or height is not a
@@ -125,8 +124,8 @@ impl Texture {
         // // * Has a minification filter (`minFilter`) that uses mipmapping (`NEAREST_MIPMAP_NEAREST`, \\
         // //   `NEAREST_MIPMAP_LINEAR`, `LINEAR_MIPMAP_NEAREST`, or `LINEAR_MIPMAP_LINEAR`).
 
-        let (width, height) = dyn_img.dimensions();
-        let (data, width, height) = (dyn_img.pixels(), dyn_img.width(), dyn_img.height());
+        // let (width, height) = dyn_img.dimensions();
+        // let (data, width, height) = (dyn_img.pixels(), dyn_img.width(), dyn_img.height());
             // if needs_power_of_two && (!width.is_power_of_two() || !height.is_power_of_two()) {
             //     let nwidth = width.next_power_of_two();
             //     let nheight = height.next_power_of_two();

@@ -22,8 +22,8 @@ use crate::render::math::*;
 use crate::render::mesh::Mesh;
 use crate::render::root::Root;
 use crate::render::camera::Camera;
-use crate::import_data::ImportData;
-// use crate::render::texture::ImportData;
+// use crate::import_data::ImportData;
+use crate::render::texture::ImportData;
 
 
 
@@ -80,6 +80,7 @@ impl Node {
             }
 
             if mesh.is_none() { // not using else due to borrow-checking madness
+                log!("mesh.is_none()");
                 mesh = Some(Rc::new(Mesh::from_gltf(
                     gl.clone(),
                     &g_mesh, root, imp)));

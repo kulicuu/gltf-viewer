@@ -21,7 +21,9 @@ use crate::render::math::*;
 use crate::render::root::Root;
 use crate::controls::OrbitControls;
 
-use crate::import_data::ImportData;
+
+use crate::render::texture::ImportData;
+// use crate::import_data::ImportData;
 
 
 
