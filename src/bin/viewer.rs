@@ -163,10 +163,14 @@ impl GltfViewer {
         viewer
     }
 
-    pub fn draw(&mut self) {
+    pub fn draw(
+        &mut self,
+        gl: Arc<GL>,
+    ) {
 
         let cam_params = self.orbit_controls.camera_params();
         self.scene.draw(
+            gl.clone(),
             &mut self.root, 
             &cam_params,
         );

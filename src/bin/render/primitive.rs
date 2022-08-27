@@ -17,7 +17,6 @@ use web_sys::{
 
 use gloo_console::log;
 
-
 use std::sync::Arc;
 
 // use camera::Camera;
@@ -280,16 +279,28 @@ impl Primitive {
     }
 
     /// render the mesh
-    pub unsafe fn draw(&self, model_matrix: &Matrix4, mvp_matrix: &Matrix4, camera_position: &Vector3) {
+    pub fn draw(
+        &self, 
+        gl: Arc<GL>,
+        model_matrix: &Matrix4, 
+        mvp_matrix: &Matrix4, 
+        camera_position: &Vector3
+    ) {
+
         // TODO!: determine if shader+material already active to reduce work...
 
         // if self.material.double_sided {
-        //     gl::Disable(gl::CULL_FACE);
+        //     gl.disable(GL::CULL_FACE);
         // } else {
-        //     gl::Enable(gl::CULL_FACE);
+        //     gl.enable(GL::CULL_FACE);
         // }
 
-        // self.configure_shader(model_matrix, mvp_matrix, camera_position);
+        self.configure_shader(
+            gl.clone(),
+            model_matrix, 
+            mvp_matrix, 
+            camera_position
+        );
 
         // // draw mesh
         // gl::BindVertexArray(self.vao);
@@ -304,8 +315,13 @@ impl Primitive {
         // gl::ActiveTexture(gl::TEXTURE0);
     }
 
-    unsafe fn configure_shader(&self, model_matrix: &Matrix4,
-        mvp_matrix: &Matrix4, camera_position: &Vector3)
+    fn configure_shader(
+        &self, 
+        gl: Arc<GL>,
+        model_matrix: &Matrix4,
+        mvp_matrix: &Matrix4, 
+        camera_position: &Vector3,
+    )
     {
         // let pbr_shader = &Rc::get_mut(&mut self.pbr_shader).unwrap();
         // let mat = &self.material;

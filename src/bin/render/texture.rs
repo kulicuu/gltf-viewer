@@ -4,6 +4,9 @@ use std::{fs, io};
 
 use base64;
 
+use gloo_console::log;
+
+
 
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
@@ -49,11 +52,18 @@ impl Texture {
     ) 
     -> Texture
     {
-
+        log!("Texture.");
         let buffers = &imp.buffers;
         let mut texture_id = 0;
 
         let g_img = g_texture.source();
+
+
+        let img = match g_img.source() {
+            Source::View { view, mime_type } => log!("nothing"),
+            _ => log!("More nothing."),
+        };
+        log!("flag.");
         // let img = match g_img.source() {
         //     Source::View { view, mime_type } => {
         //         let parent_buffer_data = &buffers[view.buffer().index()].0;

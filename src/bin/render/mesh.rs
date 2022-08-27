@@ -22,6 +22,8 @@ use crate::render::root::Root;
 use crate::render::texture::ImportData;
 use crate::render::primitive::Primitive;
 
+
+
 pub struct Mesh {
     pub index: usize, // glTF index
     pub primitives: Vec<Primitive>,
@@ -71,12 +73,19 @@ impl Mesh {
 
     pub fn draw(
         &self, 
+        gl: Arc<GL>,
         model_matrix: &Matrix4, 
         mvp_matrix: &Matrix4, 
         camera_position: &Vector3
     ) {
         for primitive in &self.primitives {
-            // unsafe { primitive.draw(model_matrix, mvp_matrix, camera_position) }
+
+            primitive.draw(
+                gl.clone(),
+                model_matrix,
+                mvp_matrix,
+                camera_position,
+            );
         }
     }
 }

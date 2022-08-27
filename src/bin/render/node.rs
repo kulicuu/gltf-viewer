@@ -155,6 +155,7 @@ impl Node {
 
     pub fn draw(
         &mut self, 
+        gl: Arc<GL>,
         root: &mut Root, 
         cam_params: &CameraParams,
     ) {
@@ -162,6 +163,7 @@ impl Node {
             let mvp_matrix = cam_params.projection_matrix * cam_params.view_matrix * self.final_transform;
 
             (*mesh).draw(
+                gl.clone(),
                 &self.final_transform, 
                 &mvp_matrix, 
                 &cam_params.position,
@@ -169,7 +171,7 @@ impl Node {
         }
         for node_id in &self.children {
             let node = root.unsafe_get_node_mut(*node_id);
-            node.draw(root, cam_params);
+            node.draw(gl.clone(), root, cam_params);
         }
     }
 }

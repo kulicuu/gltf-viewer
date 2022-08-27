@@ -54,7 +54,7 @@ fn main()
     
 
     
-    viewer::GltfViewer::new(gl.clone());
+    let mut x_view = viewer::GltfViewer::new(gl.clone());
     
     
     let start_time = Instant::now();
@@ -84,6 +84,7 @@ fn main()
 
         gl.clear(GL::COLOR_BUFFER_BIT);
 
+        x_view.draw(gl.clone());
 
         request_animation_frame(render_loop_closure.borrow().as_ref().unwrap());
     }) as Box<dyn FnMut()>));

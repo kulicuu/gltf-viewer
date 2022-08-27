@@ -4,7 +4,6 @@ use std::rc::Rc;
 use std::collections::HashMap;
 use std::path::Path;
 
-
 use web_sys::{
     HtmlCanvasElement, WebGl2RenderingContext as GL, 
     window, AngleInstancedArrays, KeyboardEvent,
@@ -12,15 +11,13 @@ use web_sys::{
     WebGlUniformLocation,
 };
 
-use crate::render::node::Node;
-
 use gloo_console::log;
 
 use std::sync::Arc;
 
 use crate::shader::*;
 use crate::render::mesh::Mesh;
-// use crate::render::node::Node;
+use crate::render::node::Node;
 use crate::render::texture::Texture;
 use crate::render::material::Material;
 use crate::shader::{ShaderFlags};
@@ -57,22 +54,15 @@ impl Root {
         //     .map(|g_node| {
         //         1
         //     }).collect();
-
         // log!("ints[0]", ints[0]);
-
         // for g_node in imp.doc.nodes() {
         //     log!("g_node", g_node.index());
-
         //     // g_node.camera().unwrap();
-
         //     // log!("g_node", g_node.camera().unwrap());
-
         //     log!("children", g_node.children().len());
         //     g_node.mesh().unwrap().primitives();
         //     log!("primitives len", g_node.mesh().unwrap().primitives().len());
-
         //     log!("one");
-
         // }
 
         let nodes: Vec<Node> = imp.doc.nodes()
@@ -95,8 +85,8 @@ impl Root {
         }
     }
 
-    // /// Note: index refers to the vec of camera node indices!
-    // pub fn get_camera_node(&self, index: usize) -> &Node {
-    //     &self.nodes[self.camera_nodes[index]]
-    // }
+    /// Note: index refers to the vec of camera node indices!
+    pub fn get_camera_node(&self, index: usize) -> &Node {
+        &self.nodes[self.camera_nodes[index]]
+    }
 }

@@ -1,15 +1,26 @@
 use gltf;
 
-use collision::{Aabb, Union};
+// use collision::{Aabb, Union};
 
 use crate::controls::CameraParams;
 use crate::render::root::Root;
 use crate::render::math::*;
 
+use std::sync::{Arc};
+
+
+use web_sys::{
+    HtmlCanvasElement, WebGl2RenderingContext as GL, 
+    window, AngleInstancedArrays, KeyboardEvent,
+    EventTarget, WebGlBuffer, WebGlProgram,
+    WebGlUniformLocation,
+};
+
+
 pub struct Scene {
     pub name: Option<String>,
     pub nodes: Vec<usize>,
-    pub bounds: Aabb3,
+    // pub bounds: Aabb3,
 }
 
 impl Default for Scene {
@@ -17,7 +28,7 @@ impl Default for Scene {
         Self {
             name: None,
             nodes: vec![],
-            bounds: Aabb3::zero()
+            // bounds: Aabb3::zero()
         }
     }
 }
@@ -47,6 +58,7 @@ impl Scene {
     // TODO: flatten draw call hierarchy (global Vec<Primitive>?)
     pub fn draw(
         &mut self, 
+        gl: Arc<GL>,
         root: &mut Root, 
         cam_params: &CameraParams,
     ) 
@@ -55,6 +67,7 @@ impl Scene {
         for node_id in &self.nodes {
             let node = root.unsafe_get_node_mut(*node_id);
             node.draw(
+                gl.clone(),
                 root, 
                 cam_params,
             );

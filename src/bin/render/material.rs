@@ -10,6 +10,7 @@ use web_sys::{
     WebGlUniformLocation,
 };
 
+use gloo_console::log;
 
 use std::sync::Arc;
 
@@ -56,6 +57,7 @@ impl Material {
         root: &mut Root,
         imp: &ImportData,
     ) -> Material {
+        log!("Material from_gltf");
         let pbr = g_material.pbr_metallic_roughness();
 
         let mut material = Material {
