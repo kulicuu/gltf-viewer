@@ -1,3 +1,6 @@
+#version 300 es
+
+
 // Originally taken from https://github.com/KhronosGroup/glTF-WebGL-PBR
 // Commit a94655275e5e4e8ae580b1d95ce678b74ab87426
 //
@@ -13,7 +16,6 @@
 //     https://github.com/KhronosGroup/glTF-WebGL-PBR/#environment-maps
 // [4] "An Inexpensive BRDF Model for Physically based Rendering" by Christophe Schlick
 //     https://www.cs.virginia.edu/~jdl/bib/appearance/analytic%20models/schlick94b.pdf
-#version 330 core
 // TODO!?: warning - extension not supported
 // #extension GL_EXT_shader_texture_lod: enable
 // #extension GL_OES_standard_derivatives : enable

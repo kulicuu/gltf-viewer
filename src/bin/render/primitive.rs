@@ -362,7 +362,7 @@ impl Primitive {
         let arr_js = js_sys::Float32Array::from(arr.as_slice());
 
 
-        let mut projectionMatrix = mat4::new_zero();
+        // let mut projectionMatrix = mat4::new_zero();
 
         // gl.uniform_matrix4fv_with_f32_array(
         //     Some(&uniform_locations.u_ModelMatrix),
@@ -372,11 +372,11 @@ impl Primitive {
         
         // let x = gl.get_uniform_location(&shader, "u_MVPMatrix").unwrap();
 
-        gl.uniform_matrix4fv_with_f32_array(
-            Some(&(&uniform_locations.u_MVPMatrix)),
-            false,
-            &projectionMatrix,
-        );
+        // gl.uniform_matrix4fv_with_f32_array(
+        //     Some(&(&uniform_locations.u_MVPMatrix)),
+        //     false,
+        //     &projectionMatrix,
+        // );
 
 
     

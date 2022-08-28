@@ -1,5 +1,6 @@
 #version 300 es
 
+
 // Originally taken from https://github.com/KhronosGroup/glTF-WebGL-PBR
 // Commit a94655275e5e4e8ae580b1d95ce678b74ab87426
 //
