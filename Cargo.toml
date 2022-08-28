@@ -12,6 +12,7 @@ gltf = "1.0.0"
 gloo-console = "0.2.1"
 image = "0.24.3"
 js-sys = "0.3.59"
+mat4 = "0.2.1"
 num-traits = "0.2.15"
 serde = { version = "1.0", features = ["derive"] }
 wasm-bindgen = { version = "0.2.82", features = ["serde-serialize"] }

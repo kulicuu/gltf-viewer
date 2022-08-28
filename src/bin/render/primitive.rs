@@ -19,6 +19,8 @@ use gloo_console::log;
 
 use std::sync::Arc;
 
+extern crate mat4;
+
 // use camera::Camera;
 use crate::render::math::*;
 use crate::render::material::Material;
@@ -265,7 +267,10 @@ impl Primitive {
             else {
                 new_shader = true;
                 // PbrShader::new(shader_flags).into()
-                Arc::new(PbrShader::new(gl.clone()))
+                Arc::new(PbrShader::new(
+                    gl.clone(),
+                    shader_flags,
+                ))
             };
         if new_shader {
             root.shaders.insert(shader_flags, shader.clone());
@@ -335,16 +340,61 @@ impl Primitive {
         // let shader = pbr_shader.shader;
 
 
-        // let mat = &self.material;
-        // let shader = &self.pbr_shader.shader;
-        // let uniforms = &self.pbr_shader.uniforms;
+        let mat = &self.material;
+        let shader = &self.pbr_shader.shader;
+        let uniform_locations = &self.pbr_shader.uniform_locations;
+        
         // self.pbr_shader.shader.use_program();
+        gl.link_program(&shader);
 
         // camera params
+
+        let mut arr: [f32; 30] = [0.0; 30];
+        let mut kdx: usize = 0;
+        for idx in 0..4 {
+            for jdx in 0..4 {
+                arr[kdx] = model_matrix[idx][jdx];
+                // log!("view_mat: ", view_mat[idx][jdx]);
+                kdx = kdx + 1;
+            }
+        }
+        
+        let arr_js = js_sys::Float32Array::from(arr.as_slice());
+
+
+        let mut projectionMatrix = mat4::new_zero();
+
+        // gl.uniform_matrix4fv_with_f32_array(
+        //     Some(&uniform_locations.u_ModelMatrix),
+        //     false,
+        //     &arr_js,
+        // );
+        
+        // let x = gl.get_uniform_location(&shader, "u_MVPMatrix").unwrap();
+
+        gl.uniform_matrix4fv_with_f32_array(
+            Some(&(&uniform_locations.u_MVPMatrix)),
+            false,
+            &projectionMatrix,
+        );
+
+
+    
+
         // shader.set_mat4(uniforms.u_ModelMatrix, model_matrix);
         // shader.set_mat4(uniforms.u_MVPMatrix, mvp_matrix);
         // shader.set_vector3(uniforms.u_Camera, camera_position);
 
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         // // NOTE: for sampler numbers, see also PbrShader constructor
         // shader.set_vector4(uniforms.u_BaseColorFactor, &mat.base_color_factor);
         // if let Some(ref base_color_texture) = mat.base_color_texture {

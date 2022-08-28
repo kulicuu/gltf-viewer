@@ -31,7 +31,6 @@ pub struct Shader {
     uniform_location_cache: HashMap<&'static str, i32>
 }
 
-
 bitflags! {
     /// Flags matching the defines in the PBR shader
     pub struct ShaderFlags: u16 {
@@ -54,7 +53,7 @@ bitflags! {
 
 pub struct PbrShader {
     pub shader: Arc<WebGlProgram>,
-    // pub flags: ShaderFlags,
+    pub flags: ShaderFlags,
     pub uniform_locations: PbrUniformLocations,
 }
 
@@ -62,51 +61,51 @@ pub struct PbrShader {
 pub struct PbrUniformLocations {
     // uniform locations,
     // // TODO!: UBO for matrices, camera, light(s)?
-    pub u_MVPMatrix: i32,
-    pub u_ModelMatrix: i32,
-    pub u_Camera: i32,
+    pub u_MVPMatrix:  WebGlUniformLocation,
+    // pub u_ModelMatrix: i32,
+    // pub u_Camera: i32,
 
-    pub u_LightDirection: i32,
-    pub u_LightColor: i32,
+    // pub u_LightDirection: i32,
+    // pub u_LightColor: i32,
 
-    pub u_AmbientLightColor: i32,
-    pub u_AmbientLightIntensity: i32,
+    // pub u_AmbientLightColor: i32,
+    // pub u_AmbientLightIntensity: i32,
 
-    // // TODO!: set when integrating IBL (unused now)
-    pub u_DiffuseEnvSampler: i32,
-    pub u_SpecularEnvSampler: i32,
-    pub u_brdfLUT: i32,
+    // // // TODO!: set when integrating IBL (unused now)
+    // pub u_DiffuseEnvSampler: i32,
+    // pub u_SpecularEnvSampler: i32,
+    // pub u_brdfLUT: i32,
 
-    // ///
+    // // ///
 
-    pub u_BaseColorSampler: i32,
-    pub u_BaseColorFactor: i32,
+    // pub u_BaseColorSampler: i32,
+    // pub u_BaseColorFactor: i32,
 
-    pub u_NormalSampler: i32,
-    pub u_NormalScale: i32,
+    // pub u_NormalSampler: i32,
+    // pub u_NormalScale: i32,
 
-    pub u_EmissiveSampler: i32,
-    pub u_EmissiveFactor: i32,
+    // pub u_EmissiveSampler: i32,
+    // pub u_EmissiveFactor: i32,
 
-    pub u_MetallicRoughnessSampler: i32,
-    pub u_MetallicRoughnessValues: i32,
+    // pub u_MetallicRoughnessSampler: i32,
+    // pub u_MetallicRoughnessValues: i32,
 
-    pub u_OcclusionSampler: i32,
-    pub u_OcclusionStrength: i32,
+    // pub u_OcclusionSampler: i32,
+    // pub u_OcclusionStrength: i32,
 
-    // // TODO!: use/remove debugging uniforms
-    // // debugging flags used for shader output of intermediate PBR variables
-    pub u_ScaleDiffBaseMR: i32,
-    pub u_ScaleFGDSpec: i32,
-    pub u_ScaleIBLAmbient: i32,
+    // // // TODO!: use/remove debugging uniforms
+    // // // debugging flags used for shader output of intermediate PBR variables
+    // pub u_ScaleDiffBaseMR: i32,
+    // pub u_ScaleFGDSpec: i32,
+    // pub u_ScaleIBLAmbient: i32,
 }
 
 
 
 impl PbrShader {
     pub fn new(
-        // flags: ShaderFlags
         gl: Arc<GL>,
+        flags: ShaderFlags,
     )
     -> Self 
     {
@@ -154,63 +153,63 @@ impl PbrShader {
 
         let uniform_locations = unsafe {
             let uniform_locations = PbrUniformLocations {
-                u_MVPMatrix: gl.get_attrib_location(&shader, "u_MVPMatrix") as i32,
-                u_ModelMatrix: gl.get_attrib_location(&shader, "u_ModelMatrix") as i32,
-                u_Camera: gl.get_attrib_location(&shader, "u_Camera") as i32,
-                // u_MVPMatrix: shader.uniform_location("u_MVPMatrix"),
-                // u_ModelMatrix: shader.uniform_location("u_ModelMatrix"),
-                // u_Camera: shader.uniform_location("u_Camera"),
+                u_MVPMatrix: gl.get_uniform_location(&shader, "u_MVPMatrix").unwrap(),
+                // u_ModelMatrix: gl.get_uniform_location(&shader, "u_ModelMatrix") as i32,
+                // u_Camera: gl.get_attrib_location(&shader, "u_Camera") as i32,
+                // // u_MVPMatrix: shader.uniform_location("u_MVPMatrix"),
+                // // u_ModelMatrix: shader.uniform_location("u_ModelMatrix"),
+                // // u_Camera: shader.uniform_location("u_Camera"),
 
-                u_LightDirection: gl.get_attrib_location(&shader, "u_LightDirection") as i32,
-                u_LightColor: gl.get_attrib_location(&shader, "u_LightColor") as i32,
-                // u_LightDirection: shader.uniform_location("u_LightDirection"),
-                // u_LightColor: shader.uniform_location("u_LightColor"),
-
-
-                u_AmbientLightColor: gl.get_attrib_location(&shader, "u_AmbientLightColor") as i32,
-
-                u_AmbientLightIntensity: gl.get_attrib_location(&shader, " u_AmbientLightIntensity") as i32,
-                // u_AmbientLightColor: shader.uniform_location("u_AmbientLightColor"),
-                // u_AmbientLightIntensity: shader.uniform_location("u_AmbientLightIntensity"),
+                // u_LightDirection: gl.get_attrib_location(&shader, "u_LightDirection") as i32,
+                // u_LightColor: gl.get_attrib_location(&shader, "u_LightColor") as i32,
+                // // u_LightDirection: shader.uniform_location("u_LightDirection"),
+                // // u_LightColor: shader.uniform_location("u_LightColor"),
 
 
-                u_DiffuseEnvSampler: gl.get_attrib_location(&shader, "u_DiffuseEnvSampler") as i32,
-                u_SpecularEnvSampler: gl.get_attrib_location(&shader, "u_SpecularEnvSampler") as i32,
-                u_brdfLUT: gl.get_attrib_location(&shader, "u_brdfLUT") as i32,
-                // u_DiffuseEnvSampler: shader.uniform_location("u_DiffuseEnvSampler"),
-                // u_SpecularEnvSampler: shader.uniform_location("u_SpecularEnvSampler"),
-                // u_brdfLUT: shader.uniform_location("u_brdfLUT"),
+                // u_AmbientLightColor: gl.get_attrib_location(&shader, "u_AmbientLightColor") as i32,
+
+                // u_AmbientLightIntensity: gl.get_attrib_location(&shader, " u_AmbientLightIntensity") as i32,
+                // // u_AmbientLightColor: shader.uniform_location("u_AmbientLightColor"),
+                // // u_AmbientLightIntensity: shader.uniform_location("u_AmbientLightIntensity"),
 
 
-                u_BaseColorSampler: gl.get_attrib_location(&shader, "u_BaseColorSampler") as i32,
-                u_BaseColorFactor: gl.get_attrib_location(&shader, "u_BaseColorFactor") as i32,
-                // u_BaseColorSampler: shader.uniform_location("u_BaseColorSampler"),
-                // u_BaseColorFactor: shader.uniform_location("u_BaseColorFactor"),
-
-                u_NormalSampler: gl.get_attrib_location(&shader, "u_NormalSampler") as i32,
-                u_NormalScale: gl.get_attrib_location(&shader, "u_NormalScale") as i32,
-                // u_NormalSampler: shader.uniform_location("u_NormalSampler"),
-                // u_NormalScale: shader.uniform_location("u_NormalScale"),
-
-                u_EmissiveSampler: gl.get_attrib_location(&shader, "u_EmissiveSampler") as i32,
-                u_EmissiveFactor: gl.get_attrib_location(&shader, " u_EmissiveFactor") as i32,
-                // u_EmissiveSampler: shader.uniform_location("u_EmissiveSampler"),
-                // u_EmissiveFactor: shader.uniform_location("u_EmissiveFactor"),
-
-                u_MetallicRoughnessSampler: gl.get_attrib_location(&shader, "u_MetallicRoughnessSampler") as i32,
-                u_MetallicRoughnessValues: gl.get_attrib_location(&shader, "u_MetallicRoughnessValues") as i32,
-                // u_MetallicRoughnessSampler: shader.uniform_location("u_MetallicRoughnessSampler"),
-                // u_MetallicRoughnessValues: shader.uniform_location("u_MetallicRoughnessValues"),
+                // u_DiffuseEnvSampler: gl.get_attrib_location(&shader, "u_DiffuseEnvSampler") as i32,
+                // u_SpecularEnvSampler: gl.get_attrib_location(&shader, "u_SpecularEnvSampler") as i32,
+                // u_brdfLUT: gl.get_attrib_location(&shader, "u_brdfLUT") as i32,
+                // // u_DiffuseEnvSampler: shader.uniform_location("u_DiffuseEnvSampler"),
+                // // u_SpecularEnvSampler: shader.uniform_location("u_SpecularEnvSampler"),
+                // // u_brdfLUT: shader.uniform_location("u_brdfLUT"),
 
 
-                u_OcclusionSampler: gl.get_attrib_location(&shader, "u_OcclusionSampler") as i32,
-                u_OcclusionStrength: gl.get_attrib_location(&shader, "u_OcclusionStrength") as i32,
-                // u_OcclusionSampler: shader.uniform_location("u_OcclusionSampler"),
-                // u_OcclusionStrength: shader.uniform_location("u_OcclusionStrength"),
+                // u_BaseColorSampler: gl.get_attrib_location(&shader, "u_BaseColorSampler") as i32,
+                // u_BaseColorFactor: gl.get_attrib_location(&shader, "u_BaseColorFactor") as i32,
+                // // u_BaseColorSampler: shader.uniform_location("u_BaseColorSampler"),
+                // // u_BaseColorFactor: shader.uniform_location("u_BaseColorFactor"),
 
-                u_ScaleDiffBaseMR: gl.get_attrib_location(&shader, "u_ScaleDiffBaseMR") as i32,
-                u_ScaleFGDSpec: gl.get_attrib_location(&shader, " u_ScaleFGDSpec") as i32,
-                u_ScaleIBLAmbient: gl.get_attrib_location(&shader, "u_ScaleIBLAmbient") as i32,
+                // u_NormalSampler: gl.get_attrib_location(&shader, "u_NormalSampler") as i32,
+                // u_NormalScale: gl.get_attrib_location(&shader, "u_NormalScale") as i32,
+                // // u_NormalSampler: shader.uniform_location("u_NormalSampler"),
+                // // u_NormalScale: shader.uniform_location("u_NormalScale"),
+
+                // u_EmissiveSampler: gl.get_attrib_location(&shader, "u_EmissiveSampler") as i32,
+                // u_EmissiveFactor: gl.get_attrib_location(&shader, " u_EmissiveFactor") as i32,
+                // // u_EmissiveSampler: shader.uniform_location("u_EmissiveSampler"),
+                // // u_EmissiveFactor: shader.uniform_location("u_EmissiveFactor"),
+
+                // u_MetallicRoughnessSampler: gl.get_attrib_location(&shader, "u_MetallicRoughnessSampler") as i32,
+                // u_MetallicRoughnessValues: gl.get_attrib_location(&shader, "u_MetallicRoughnessValues") as i32,
+                // // u_MetallicRoughnessSampler: shader.uniform_location("u_MetallicRoughnessSampler"),
+                // // u_MetallicRoughnessValues: shader.uniform_location("u_MetallicRoughnessValues"),
+
+
+                // u_OcclusionSampler: gl.get_attrib_location(&shader, "u_OcclusionSampler") as i32,
+                // u_OcclusionStrength: gl.get_attrib_location(&shader, "u_OcclusionStrength") as i32,
+                // // u_OcclusionSampler: shader.uniform_location("u_OcclusionSampler"),
+                // // u_OcclusionStrength: shader.uniform_location("u_OcclusionStrength"),
+
+                // u_ScaleDiffBaseMR: gl.get_attrib_location(&shader, "u_ScaleDiffBaseMR") as i32,
+                // u_ScaleFGDSpec: gl.get_attrib_location(&shader, " u_ScaleFGDSpec") as i32,
+                // u_ScaleIBLAmbient: gl.get_attrib_location(&shader, "u_ScaleIBLAmbient") as i32,
                 // u_ScaleDiffBaseMR: shader.uniform_location("u_ScaleDiffBaseMR"),
                 // u_ScaleFGDSpec: shader.uniform_location("u_ScaleFGDSpec"),
                 // u_ScaleIBLAmbient: shader.uniform_location("u_ScaleIBLAmbient"),
@@ -234,8 +233,8 @@ impl PbrShader {
         };
 
         Self {
-           shader,
-            // flags,
+            shader,
+            flags,
             uniform_locations,
         }
     }
