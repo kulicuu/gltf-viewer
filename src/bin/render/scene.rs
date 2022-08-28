@@ -8,6 +8,7 @@ use crate::render::math::*;
 
 use std::sync::{Arc};
 
+use gloo_console::log;
 
 use web_sys::{
     HtmlCanvasElement, WebGl2RenderingContext as GL, 
@@ -63,7 +64,7 @@ impl Scene {
         cam_params: &CameraParams,
     ) 
     {
-
+        // log!("Scene Draw");
         for node_id in &self.nodes {
             let node = root.unsafe_get_node_mut(*node_id);
             node.draw(

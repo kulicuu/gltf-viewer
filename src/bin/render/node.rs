@@ -159,6 +159,8 @@ impl Node {
         root: &mut Root, 
         cam_params: &CameraParams,
     ) {
+
+        // log!("Node Draw");
         if let Some(ref mesh) = self.mesh {
             let mvp_matrix = cam_params.projection_matrix * cam_params.view_matrix * self.final_transform;
 

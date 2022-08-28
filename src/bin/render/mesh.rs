@@ -78,6 +78,7 @@ impl Mesh {
         mvp_matrix: &Matrix4, 
         camera_position: &Vector3
     ) {
+        // log!("Mesh draw.");
         for primitive in &self.primitives {
 
             primitive.draw(

@@ -8,6 +8,18 @@ use std::io::Read;
 use std::ptr;
 use std::str;
 
+use std::sync::Arc;
+
+
+use web_sys::{
+    HtmlCanvasElement, WebGl2RenderingContext as GL, 
+    window, AngleInstancedArrays, KeyboardEvent,
+    EventTarget, WebGlBuffer, WebGlProgram,
+    WebGlUniformLocation,
+};
+
+use gloo_console::log;
+use wasm_bindgen::prelude::*;
 
 use cgmath::{Matrix, Matrix4, Vector3, Vector4};
 use cgmath::prelude::*;
@@ -50,10 +62,33 @@ pub struct PbrShader {
 impl PbrShader {
     pub fn new(
         // flags: ShaderFlags
+        gl: Arc<GL>,
     )
     -> Self 
     {
-        
+        // doing some
+
+
+        let vert_code = include_str!("../shaders/pbr-vert.glsl");
+        let vert_shader = gl.create_shader(GL::VERTEX_SHADER).unwrap();
+        gl.shader_source(&vert_shader, vert_code);
+        gl.compile_shader(&vert_shader);
+        let vert_shader_log = gl.get_shader_info_log(&vert_shader);
+        log!("pbr-vert.glsl compilation log: ", vert_shader_log);
+    
+        let frag_code = include_str!("../shaders/pbr-frag.glsl");
+        let frag_shader = gl.create_shader(GL::FRAGMENT_SHADER).unwrap();
+        gl.shader_source(&frag_shader, frag_code);
+        gl.compile_shader(&frag_shader);
+        let frag_shader_log = gl.get_shader_info_log(&frag_shader);
+        log!("pbr-frag.glsl compilation log: ", frag_shader_log);
+    
+        let shader_program = Arc::new(gl.create_program().unwrap());
+        gl.attach_shader(&shader_program, &vert_shader);
+        gl.attach_shader(&shader_program, &frag_shader);
+        gl.link_program(&shader_program);
+    
+    
         
         
         // let mut shader = Shader::from_source(

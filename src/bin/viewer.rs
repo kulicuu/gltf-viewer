@@ -167,7 +167,7 @@ impl GltfViewer {
         &mut self,
         gl: Arc<GL>,
     ) {
-
+        // log!("Viewer Draw. ");
         let cam_params = self.orbit_controls.camera_params();
         self.scene.draw(
             gl.clone(),

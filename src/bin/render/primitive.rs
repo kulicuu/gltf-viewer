@@ -73,11 +73,14 @@ pub struct Primitive {
 
     material: Rc<Material>,
 
-    pbr_shader: Rc<PbrShader>,
+    // pbr_shader: Rc<PbrShader>,
+    pbr_shader: Arc<PbrShader>,
 
     // TODO!: mode, targets
 }
 
+
+// Might as well use Arcs for option to multithread.    
 impl Primitive {
     pub fn new(
         gl: Arc<GL>,
@@ -85,7 +88,7 @@ impl Primitive {
         vertices: &[Vertex],
         indices: Option<Vec<u32>>,
         material: Rc<Material>,
-        shader: Rc<PbrShader>,
+        shader: Arc<PbrShader>,
     ) -> Primitive {
         let num_indices = indices.as_ref().map(|i| i.len()).unwrap_or(0);
         let mut prim = Primitive {
@@ -257,15 +260,15 @@ impl Primitive {
         let mut new_shader = false; // borrow checker workaround
         let shader =
             if let Some(shader) = root.shaders.get(&shader_flags) {
-                Rc::clone(shader)
+                shader.clone()
             }
             else {
                 new_shader = true;
                 // PbrShader::new(shader_flags).into()
-                PbrShader::new().into()
+                Arc::new(PbrShader::new(gl.clone()))
             };
         if new_shader {
-            root.shaders.insert(shader_flags, Rc::clone(&shader));
+            root.shaders.insert(shader_flags, shader.clone());
         }
 
         Primitive::new(
@@ -286,7 +289,7 @@ impl Primitive {
         mvp_matrix: &Matrix4, 
         camera_position: &Vector3
     ) {
-
+        // log!("Primitive Draw");
         // TODO!: determine if shader+material already active to reduce work...
 
         // if self.material.double_sided {
@@ -323,7 +326,15 @@ impl Primitive {
         camera_position: &Vector3,
     )
     {
+        log!("Configure Shader"); // This procedure is running every frame.
+
         // let pbr_shader = &Rc::get_mut(&mut self.pbr_shader).unwrap();
+        let pbr_shader = self.pbr_shader.clone();
+
+        let mat = &self.material;
+        // let shader = pbr_shader.shader;
+
+
         // let mat = &self.material;
         // let shader = &self.pbr_shader.shader;
         // let uniforms = &self.pbr_shader.uniforms;

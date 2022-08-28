@@ -35,6 +35,11 @@ use crate::utils::time_polyfill::Instant;
 use gltf;
 
 
+// Organizing state mgmt and draw operations here.
+// Maybe transport stuff from the object-oriented legacy code 
+// to something more procedural.
+
+
 
 
 fn main()
@@ -54,7 +59,7 @@ fn main()
     
 
     
-    let mut x_view = viewer::GltfViewer::new(gl.clone());
+    let mut viewer_to_draw = viewer::GltfViewer::new(gl.clone());
     
     
     let start_time = Instant::now();
@@ -65,6 +70,12 @@ fn main()
     gl.clear_color(0.993, 0.9833, 0.952, 1.0);
     gl.enable(GL::DEPTH_TEST);
 
+
+    let state: [u32; 1] = [0]; // can't do much of anything with this but hold the place.
+
+
+
+    // We'll import some functions here.
 
 
 
@@ -84,7 +95,7 @@ fn main()
 
         gl.clear(GL::COLOR_BUFFER_BIT);
 
-        x_view.draw(gl.clone());
+        viewer_to_draw.draw(gl.clone());
 
         request_animation_frame(render_loop_closure.borrow().as_ref().unwrap());
     }) as Box<dyn FnMut()>));
